@@ -1,0 +1,8 @@
+---
+# defaults file for sdarwin.bootstrap
+
+ansibleuser: ansible
+
+sshpublickey: |
+  ssh-rsa place-key-here-or-override-the-variable-
+

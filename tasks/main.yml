@@ -1,0 +1,31 @@
+---
+# tasks file for sdarwin.bootstrap
+# installing screen and tmux, just to show that apps can be installed and ansible is functioning.
+- name: install tmux
+  apt: name=tmux update_cache=true
+  when: ansible_os_family == 'Debian'
+
+- name: install screen
+  package: name=screen update_cache=true
+
+- name: install libselinux-python
+  package: name=libselinux-python update_cache=true
+  when: ansible_os_family == 'RedHat'
+
+- name: create ansible user 
+  user: name="{{ ansibleuser }}" shell=/bin/bash
+
+- name: allow access to ansible for team members
+  authorized_key: user=ansible
+                  key="{{ item }}"
+  with_items:
+    - "{{ sshpublickey }}"
+
+- name: configure sudoers
+  lineinfile:   dest=/etc/sudoers.d/ansible
+                line="ansible ALL=(ALL) NOPASSWD:ALL"
+                mode=0440
+                state=present
+                create=yes
+                validate='visudo -cf %s'
+

@@ -1,0 +1,6 @@
+---
+- hosts: '{{ hosts }}'
+  remote_user: '{{ user }}'
+  become: yes
+  roles:
+     - sdarwin.bootstrap
