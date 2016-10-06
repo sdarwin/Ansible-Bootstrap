@@ -2,5 +2,14 @@
 - hosts: '{{ hosts }}'
   remote_user: '{{ user }}'
   become: yes
+  vars_prompt:
+    - name: "hosts"
+      prompt: "Hosts"
+      default: "www.example.com"
+      private: False
+    - name: "user"
+      prompt: "Initial User"
+      default: "root"
+      private: False
   roles:
      - sdarwin.bootstrap

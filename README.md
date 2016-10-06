@@ -1,33 +1,41 @@
 Ansible Bootstrap
 =========
 
-A role to bootstrap a node, so that ansible can manage it.  Before ansible can manage a server it needs to be able to ssh in.  This sets up an ansible user account on the client. 
+A role to bootstrap a node, so that ansible can manage it. Before ansible can manage a server it needs to be able to ssh in. This sets up an ansible user account on the client.
 
-Many Galaxy roles include a lot of functionality in their bootstrap code, and while that is certainly very important, it might be referred to as the "standard server" role, rather than bootstrap. This is a tiny playbook just to get ssh working for the ansible user.  
-
-Pre-Requirements
-------------
-
-see docs/INSTALL.md for steps to install a new Ansible control machine, if not already done.
+Many Galaxy roles include a lot of functionality in their bootstrap code, and while that is certainly very important, it might be referred to as the "standard server" role, rather than bootstrap. This is a tiny playbook just to get ssh working for the ansible user. 
 
 Instructions
 ----------------
 
-1. Set the public ssh key for ansible as the sshpublickey variable in defaults/main.yml.  Which means you will need to fork the playbook and modify it with your custom key.  Or follow the wrapper pattern, where this role is a dependency, and the key is set by the calling role.
+Setup:
 
-2. Edit /etc/hosts and add an entry for the new server.  Or update DNS with the new server.
+1. See docs/INSTALL.md for steps to install a new Ansible control machine, if not already done.
 
-3. Add the new host to the ansible inventory such as /etc/ansible/hosts
+2. configure your group_vars file at /etc/ansible/group_vars/all (or in a customized location), and include these variables:
+```
+bootstrap_ansibleuser: ansible
+bootstrap_publickey: |
+  ssh-rsa place-ssh-key-here-
+```
 
-4. When running this playbook, you will need to know the initial root user, or sudo account, on the new server.   That will be specified on the command-line as user= .   This is one-time only, because after the role has been run, it will have the new ansible user and ssh key.
+Replace the ssh key with your public key. Keep the blank spaces before ssh-rsa. New ssh keys may be generated with ssh-keygen.
 
-A main.yml playbook is included with this role.  Run it as follows.
+For each New Host:
 
-Examples:  
-ansible-playbook main.yml --ask-pass --extra-vars "hosts=ubuntu1404.example.com user=vagrant"  
-ansible-playbook main.yml --ask-pass --extra-vars "hosts=centos67 user=root"  
+1. Add the new node into DNS or /etc/hosts
 
-filling in the hosts and user variables.
+2. Add the new host to the ansible inventory such as /etc/ansible/hosts
+
+3. Run this role, from it's directory location:
+```
+cd /etc/ansible/roles/sdarwin.bootstrap
+ansible-playbook main.yml
+```
+
+It will prompt you for the host to be bootstrapped, and the user to connect as the first time. That will likely be "root", or "ubuntu", or whatever account has access. It then proceeds to configure the "ansible" user.
+
+For a bit more development chat about the code in this role see docs/DISCUSSION.md.
 
 License
 -------

@@ -13,13 +13,13 @@
   when: ansible_os_family == 'RedHat'
 
 - name: create ansible user 
-  user: name="{{ ansibleuser }}" shell=/bin/bash
+  user: name="{{ bootstrap_ansibleuser }}" shell=/bin/bash
 
 - name: allow access to ansible for team members
   authorized_key: user=ansible
                   key="{{ item }}"
   with_items:
-    - "{{ sshpublickey }}"
+    - "{{ bootstrap_publickey }}"
 
 - name: configure sudoers
   lineinfile:   dest=/etc/sudoers.d/ansible
