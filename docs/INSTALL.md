@@ -23,9 +23,9 @@ pip install httplib2
 pip install six
 ```
 
-And then every time you log-in, load ansible into the PATH:
-
+Create a file ansibleboot.sh on the control machine:
 ```
+#/bin/bash
 source /opt/github/ansible/hacking/env-setup
 eval "$(ssh-agent -s)"
 ssh-add -l
@@ -33,4 +33,8 @@ ssh-add -l
 ssh-add /home/ansible/.ssh/id_rsa
 ssh-add -l
 ```
+Then once before using ansible:
+source ansibleboot.sh
+
+This implies that on the control machine you created a user called ansible, created ssh keys for ansible, and then subsequently run ansible as either ansible or root.
 
