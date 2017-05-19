@@ -1,61 +1,40 @@
 Install Ansible Controller Machine
 =========
 
-Even before using this playbook, here is a one-time procedure to install an ansible workstation on Ubuntu, if not already done.
+Even before using this playbook, here is a one-time procedure to install an ansible workstation, if not already done.
 
+The code is in the scripts/ folder of this role. Read the contents of the scripts, as they are just a series of simple bash commands to install packages.
+
+First, change to the directory:
 ```
+cd ../scripts/
+```
+
 UBUNTU
-mkdir -p /opt/github
-cd /opt/github
-git clone git://github.com/ansible/ansible.git --recursive
-apt-get update
-apt-get install python 
-apt-get install python-setuptools
-easy_install pip
-apt-get install build-essential
-apt-get install libpython2.7-dev
-apt-get install libffi-dev
-apt-get install libssl-dev
-apt-get install sshpass
-pip install paramiko
-pip install PyYAML
-pip install Jinja2
-pip install httplib2
-pip install six
-
+```
+chmod 755 install-ansible-ubuntu.sh
+./install-ansible-ubuntu.sh
+```
 REDHAT
-mkdir -p /opt/github
-cd /opt/github
-yum install -y git
-git clone git://github.com/ansible/ansible.git --recursive
-#yum install -y python, already installed
-yum install -y python-setuptools
-easy_install pip
-yum install ftp://mirror.switch.ch/pool/4/mirror/centos/7.3.1611/cloud/x86_64/openstack-kilo/common/pyparsing-2.0.3-1.el7.noarch.rpm
-yum groupinstall 'Development Tools'
-yum install -y python2.7-devel
-yum install -y libffi-dev
-#yum install -y openssl-devel, already installed
-yum install -y sshpass
-pip install paramiko
-pip install PyYAML
-pip install Jinja2
-pip install httplib2
-pip install six
 ```
+chmod 755 install-ansible-redhat.sh
+./install-ansible-redhat.sh
+```
+----
 
-Create a file ansibleboot.sh on the control machine:
+Next, create the 'ansible' user locally, which will be used to connect to Ansible client machines in the future.
 ```
-#/bin/bash
-source /opt/github/ansible/hacking/env-setup
-eval "$(ssh-agent -s)"
-ssh-add -l
-#in the following step, replace the keyname with your private key, if different:
-ssh-add /home/ansible/.ssh/id_rsa
-ssh-add -l
+adduser ansible
+su - ansible
+mkdir .ssh
+chmod 700 .ssh
+cd .ssh
+ssh-keygen
+exit
 ```
-Then once before using ansible:
+Next, every time you log in to the Ansible Control Machine as the user who will be running ansible (either root or ansible probably), run this script as follows:
+```
 source ansibleboot.sh
-
-This implies that on the control machine you created a user called ansible, created ssh keys for ansible, and then subsequently run ansible as either ansible or root.
+```
+You may like to copy ansibleboot.sh to your home directory, and modify it as necessary if the ssh key will be different from the one listed.
 
