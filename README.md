@@ -100,3 +100,6 @@ Author Information
 By Sam Darwin, 2016.
 
 Feedback and bug reports welcome.
+
+[![Analytics](https://ga-beacon.appspot.com/UA-112361697-1/Ansible-Bootstrap)](https://github.com/igrigorik/ga-beacon)
+
