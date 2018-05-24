@@ -1,9 +1,8 @@
-#/bin/bash
-#comment out the following line if you are NOT running ansible from source:
+#!/bin/bash
+
+#This script simply loads a version of ansible from source code
+#rather than from installed packages like .rpm or .deb.
+#Modify the file path as necessary.
+
 source /opt/github/ansible/hacking/env-setup
-eval "$(ssh-agent -s)"
-ssh-add -l
-#in the following step, replace the keyname with your private key, if different:
-ssh-add /home/ansible/.ssh/id_rsa
-ssh-add -l
 

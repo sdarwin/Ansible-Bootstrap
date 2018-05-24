@@ -5,6 +5,8 @@ A role to bootstrap a node, so that ansible can manage it. Before ansible can ma
 
 Many Galaxy roles include a lot of functionality in their bootstrap code, and while that is certainly very important, it might be referred to as the "standard server" role, rather than bootstrap. This is a tiny playbook just to get ssh working for the ansible user. 
 
+If you already have a default administrative account on all the servers such as ec2-user, ubuntu, or centos then you may utilize that account as the ansible user without modification. Therefore, this role is not required. The original strategy here was to create a dedicated user account called "ansible", which was distinct from the "ubuntu" user, for example, and the "ansible" user would the one running playbooks on all client machines.
+
 Instructions
 ----------------
 
@@ -28,40 +30,55 @@ chmod 755 install-ansible-redhat.sh
 ./install-ansible-redhat.sh
 ```
 
-2. Next, create the 'ansible' user locally, which will be used to connect to Ansible client machines in the future.
+2. Create the 'ansible' user on the control machine.
 
 ```
 adduser ansible
 su - ansible
 mkdir .ssh
-chmod 700 .ssh
 cd .ssh
 ssh-keygen
+cp id_rsa.pub authorized_keys
+cd ..
+chmod -R 700 .ssh
 exit
 ```
 The main point of this is generating ansible's ssh keys. You could possibly just create a set of ssh keys without creating an entirely new user. But the method here allows you to treat the control machine as a "client" also.
 
-3. Every time you log in to the Ansible Control Machine as the user who will be running ansible (either root or ansible probably), run this script as follows. It will load your ssh key into ssh-agent, making it available for all ssh sessions with the nodes.
+-----
+
+FURTHER STEPS, OPTION 1. FULL END-TO-END SSH FORWARDING. (recommended)
+
+3. Copy the public and private keys which you had created with ssh-keygen to your local computer.
+
+4. Modify scripts/sshagent.sh as necessary, and run scripts/sshagent.sh from your local computer. Then ssh into the control machine with ssh forwarding enabled, that is ssh -A
+
+5. Every time you log in to the Ansible Control Machine as the user who will be running ansible (either root or ansible probably), run this script as follows. It will load ansible from sourcecode. Or add it to your .bashrc file.
 
 ```
-cd scripts
-source ansibleboot.sh
-```
-Or, you may like to copy ansibleboot.sh to your home directory, and modify it as necessary. Reasons to modify it manually:
-- if the ssh key will be different from the one listed there. Change it to point to your ssh key.
-- if you have installed ansible from packages, and don't need the "source /opt/github/ansible/hacking/env-setup" line, just comment it out.
-
-4. In the case of AWS, the way to initially connect to a new machine is with an ssh key. Only needed the first time. Add the key to the ssh agent:
-
-```
-#load ssh-agent. Already done if you ran ansibleboot.sh :
-eval "$(ssh-agent -s)"
-
-#add the key
-ssh-add /root/.ssh/_my_key_
+source scripts/ansibleboot.sh
 ```
 
-5. configure your group_vars file at /etc/ansible/group_vars/all (or in a customized location), and include these variables:
+and proceed to Step 6 below.
+
+-----
+
+FURTHER STEPS, OPTION 2. SSH FORWARDING only from the control machine.
+
+3. Copy the public and private keys which you had created with ssh-keygen to your local computer.
+
+4. Using those ssh keys, from Step 3, ssh into the control machine.
+
+5. Every time you log in to the Ansible Control Machine as the user who will be running ansible (either root or ansible probably), run this script as follows. It will load ansible from sourcecode, and load ssh keys. Or add it to your .bashrc file. (review and modify those scripts if necessary)
+
+```
+source scripts/sshagent.sh
+source scripts/ansibleboot.sh
+```
+
+-----
+
+6. configure your group_vars file at /etc/ansible/group_vars/all (or in a customized location), and include these variables:
 
 ```
 bootstrap_ansibleuser: ansible
@@ -71,7 +88,7 @@ bootstrap_publickey: |
 Replace the ssh key with your public key. Keep the blank spaces before ssh-rsa.
 The key should be ansible's public key, which was generated in Step 2. This is not to be confused with the server's initial admin keys (such as root, ec2-user, or ubuntu). 
 
-6. For each New Host:
+7. For each New Host:
 
 - Add the new node into DNS or /etc/hosts
 
