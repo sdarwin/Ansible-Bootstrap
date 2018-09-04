@@ -2,8 +2,9 @@
 
 mkdir -p /opt/github
 cd /opt/github
-git clone git://github.com/ansible/ansible.git --recursive
 apt-get update
+apt-get install -y git
+git clone git://github.com/ansible/ansible.git --recursive
 apt-get install -y python
 apt-get install -y python-setuptools
 easy_install pip
