@@ -1,9 +1,9 @@
 ---
-- hosts: '{{ hosts }}'
+- hosts: '{{ targethosts }}'
   remote_user: '{{ user }}'
   become: yes
   vars_prompt:
-    - name: "hosts"
+    - name: "targethosts"
       prompt: "Hosts"
       default: "www.example.com"
       private: False

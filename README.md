@@ -97,7 +97,7 @@ The key should be ansible's public key, which was generated in Step 2. This is n
 - Run this role, from it's directory location:
 ```
 cd /etc/ansible/roles/sdarwin.bootstrap
-ansible-playbook main.yml
+ansible-playbook default.yml
 ```
 
 It will prompt you for the host to be bootstrapped, and the user to connect as the first time. That will likely be "root", or "ubuntu", or whatever account has access. It then proceeds to configure the "ansible" user.

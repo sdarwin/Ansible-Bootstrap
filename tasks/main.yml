@@ -22,8 +22,8 @@
     - "{{ bootstrap_publickey }}"
 
 - name: configure sudoers
-  lineinfile:   dest=/etc/sudoers.d/ansible
-                line="ansible ALL=(ALL) NOPASSWD:ALL"
+  lineinfile:   dest=/etc/sudoers.d/{{ bootstrap_ansibleuser }}
+                line="{{ bootstrap_ansibleuser }} ALL=(ALL) NOPASSWD:ALL"
                 mode=0440
                 state=present
                 create=yes
